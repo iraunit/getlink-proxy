@@ -5,6 +5,7 @@ const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KE
 
 interface CacheRecord extends APIOutput {
   url: string;
+  createdAt: Date;
 }
 
 const checkForCache = async (url: string): Promise<APIOutput | null> => {
@@ -20,7 +21,27 @@ const checkForCache = async (url: string): Promise<APIOutput | null> => {
     }
 
     if (data) {
-      return data[0] as unknown as APIOutput;
+      const cacheEntry = data[0] as CacheRecord;
+      const createdAt = new Date(cacheEntry.createdAt);
+      const now = new Date();
+
+      const diffTime = now.getTime() - createdAt.getTime();
+      const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+      if (diffDays > 10) {
+        const { error: deleteError } = await supabase
+          .from('meta-cache')
+          .delete()
+          .eq('url', url);
+
+        if (deleteError) {
+          console.log(deleteError);
+        }
+
+        return null;
+      } else {
+        return cacheEntry as APIOutput;
+      }
     }
     console.log(data);
 
