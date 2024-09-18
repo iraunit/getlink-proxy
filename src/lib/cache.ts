@@ -22,6 +22,9 @@ const checkForCache = async (url: string): Promise<APIOutput | null> => {
 
     if (data) {
       const cacheEntry = data[0] as CacheRecord;
+      if (!cacheEntry || !cacheEntry.createdAt) {
+        return null;
+      }
       const createdAt = new Date(cacheEntry.createdAt);
       const now = new Date();
 
