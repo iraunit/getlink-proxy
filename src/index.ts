@@ -25,7 +25,7 @@ app.use(cors({
 
 app.use((req, res, next) => {
   res.set({
-    'Cache-Control': 'public'
+    'Cache-Control': 'no-store'
   });
   next();
 });
@@ -53,7 +53,7 @@ try {
     expire: 1000 * 60
   });
 } catch (error) {
-  console.error(error);
+  console.error('Redis connection error', error);
 }
 
 const sendResponse = (res: Response, output: APIOutput | null) => {
