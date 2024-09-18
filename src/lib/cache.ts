@@ -22,6 +22,7 @@ const checkForCache = async (url: string): Promise<APIOutput | null> => {
     if (data) {
       return data[0] as unknown as APIOutput;
     }
+    console.log(data);
 
     return null;
   } catch (error) {

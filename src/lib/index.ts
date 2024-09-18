@@ -12,7 +12,6 @@ export const getMetadata = async (url: string): Promise<MetaResult | null> => {
   try {
     return (await parser(url, config)) as MetaResult;
   } catch (err) {
-    console.log(err);
     return null;
   }
 };
