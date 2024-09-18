@@ -32,24 +32,29 @@ app.use((req, res, next) => {
 
 const port = Number(process.env.PORT || 8080);
 
-if (process.env.REDIS_URL) {
-  var rtg = require('url').parse(process.env.REDIS_URL);
-  var redis = require('redis').createClient(rtg.port, rtg.hostname);
+let redis;
+try {
+  if (process.env.REDIS_URL) {
+    const rtg = require('url').parse(process.env.REDIS_URL);
+    redis = require('redis').createClient(rtg.port, rtg.hostname);
 
-  redis.auth(rtg.auth.split(':')[1]);
-} else {
-  var redis = require('redis').createClient();
+    redis.auth(rtg.auth.split(':')[1]);
+  } else {
+    redis = require('redis').createClient();
+  }
+
+  const limiter = require('express-limiter')(app, redis);
+
+  limiter({
+    path: '/v2',
+    method: 'get',
+    lookup: ['connection.remoteAddress'],
+    total: 1000,
+    expire: 1000 * 60
+  });
+} catch (error) {
+  console.error(error);
 }
-
-const limiter = require('express-limiter')(app, redis);
-
-limiter({
-  path: '/v2',
-  method: 'get',
-  lookup: ['connection.remoteAddress'],
-  total: 300,
-  expire: 1000 * 60
-});
 
 const sendResponse = (res: Response, output: APIOutput | null) => {
   if (!output) {
