@@ -1,6 +1,6 @@
 import { MetaResult } from '../types';
-import parser from 'html-metadata-parser';
 import { AxiosRequestConfig } from 'axios';
+import { customparserMetaResult } from './customParser';
 
 const config: AxiosRequestConfig = {
   headers: {
@@ -10,7 +10,7 @@ const config: AxiosRequestConfig = {
 
 export const getMetadata = async (url: string): Promise<MetaResult | null> => {
   try {
-    return (await parser(url, config)) as MetaResult;
+    return (await customparserMetaResult(url, config)) as MetaResult;
   } catch (err) {
     return null;
   }

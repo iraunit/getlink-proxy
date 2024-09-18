@@ -142,7 +142,6 @@ app.get('/v2', async (req, res) => {
       };
 
       if (!cached && output) {
-        console.log('creating cache');
         await createCache({
           url: url,
           createdAt: new Date(),
