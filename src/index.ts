@@ -141,9 +141,8 @@ app.get('/v2', async (req, res) => {
         hostname
       };
 
-      sendResponse(res, output);
-
       if (!cached && output) {
+        console.log('creating cache');
         await createCache({
           url,
           title: output.title,
@@ -153,6 +152,8 @@ app.get('/v2', async (req, res) => {
           hostname: output.hostname
         });
       }
+      sendResponse(res, output);
+
     }
   } catch (error) {
     console.log(error);
